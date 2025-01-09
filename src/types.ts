@@ -3,3 +3,20 @@ export enum CRYPTO_CURRENCY {
     ETH = "ETH",
     USDC = "USDC",
 };
+
+export interface SaveTransactionData {
+    user_id: string;
+    action: string;
+    crypto_code: string;
+    crypto_amount: string;
+    money: string;
+    datetime: Date;
+};
+
+export interface CryptoCurrencyResponse {
+    ask: number;
+    totalAsk: number;
+    bid: number;
+    totalBid: number;
+    time: number;
+}
