@@ -1,6 +1,4 @@
 <script setup lang="ts">
-// TODO: Pantalla para comprar monedas. Debe haber 3 opciones, cantidad (float), datetime, cuanto se pagó
-
 import {ref} from "vue";
 import type {TransactionData} from "../types.ts";
 import {toast} from "vue3-toastify";
