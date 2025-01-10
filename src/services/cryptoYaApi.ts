@@ -9,7 +9,7 @@ const cryptoYaBack = axios.create({
 });
 
 export const cryptoYaApi = {
-    async getCurrencyPrice<CryptoCurrencyResponse>(currency: string) {
-        return await cryptoYaBack.get(`/binance/${currency}/ARS/1`);
+    async getCurrencyPrice(currency: string) {
+        return await cryptoYaBack.get<CryptoCurrencyResponse>(`/binance/${currency}/ARS/1`);
     }
 }

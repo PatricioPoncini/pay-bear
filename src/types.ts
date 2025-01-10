@@ -4,7 +4,7 @@ export enum CRYPTO_CURRENCY {
     USDC = "USDC",
 };
 
-export interface SaveTransactionData {
+export interface TransactionData {
     user_id: string;
     action: string;
     crypto_code: string;
