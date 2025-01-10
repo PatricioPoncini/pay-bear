@@ -4,11 +4,11 @@ import HomeCard from "../components/HomeCard.vue";
 
 <template>
   <div class="grid grid-cols-1">
-    <div class="flex flex-col items-center gap-4 pt-10">
-      <h1 class="text-4xl sm:text-5xl font-semibold text-[#eab308]">CryptoExchange Pay Bear</h1>
-      <p class="text-lg sm:text-xl text-gray-500">Your portal to the cryptocurrency world</p>
+    <div class="flex flex-col items-center gap-4 pt-6 sm:pt-10">
+      <h1 class="text-3xl sm:text-4xl md:text-5xl font-semibold text-[#eab308] text-center">CryptoExchange Pay Bear</h1>
+      <p class="text-base sm:text-lg md:text-xl text-gray-500 text-center">Your portal to the cryptocurrency world</p>
 
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 md:gap-12 place-items-center mt-10 sm:mt-20">
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-6 md:gap-8 place-items-center mt-8 sm:mt-12 md:mt-16">
         <HomeCard
             title="Buy Cryptocurrencies"
             description="Get your favorite cryptocurrencies"
@@ -41,3 +41,4 @@ import HomeCard from "../components/HomeCard.vue";
     </div>
   </div>
 </template>
+
