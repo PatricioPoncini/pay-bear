@@ -24,11 +24,16 @@ onMounted(async () => {
 
 <template>
   <div class="h-screen w-full flex flex-col p-10">
-    <div v-if="isLoading" class="h-full w-full flex items-center justify-center">
-      <div class="animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-green-500"></div>
+    <div class="text-center mb-8">
+      <h1 class="text-3xl font-bold text-yellow-500 mb-2">Transactions History</h1>
+      <p class="text-gray-400">Watch your crypto transactions</p>
     </div>
 
-    <div v-else class="flex-1 overflow-hidden">
+    <div v-if="isLoading" class="h-full w-full flex items-center justify-center">
+      <div class="animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-yellow-500"></div>
+    </div>
+
+    <div v-else class="flex-1 overflow-hidden rounded-lg">
       <div class="h-full overflow-auto">
         <table class="w-full text-sm text-left text-gray-500 table-fixed">
           <thead class="text-xs text-white bg-gray-800 sticky top-0">
@@ -51,8 +56,15 @@ onMounted(async () => {
             <td class="px-6 py-4">
               {{ transaction.crypto_amount }}
             </td>
-            <td class="px-6 py-4">
-              {{ transaction.action }}
+            <td class="px-6 py-4" v-if="transaction.action === 'purchase'">
+              <span class="text-xs font-medium me-2 px-2.5 py-0.5 rounded bg-green-900 text-green-300">
+                {{ transaction.action }}
+              </span>
+            </td>
+            <td class="px-6 py-4" v-else>
+              <span class="text-xs font-medium me-2 px-2.5 py-0.5 rounded bg-red-900 text-red-300">
+                {{ transaction.action }}
+              </span>
             </td>
             <td class="px-6 py-4">
               {{ transaction.money }}

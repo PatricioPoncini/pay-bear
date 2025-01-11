@@ -1,23 +1,40 @@
 <script setup lang="ts">
-import {ref} from "vue";
+import {computed, onMounted, ref} from "vue";
 import type {TransactionData} from "../types.ts";
 import {toast} from "vue3-toastify";
 import {cryptoYaApi} from "../services/cryptoYaApi.ts";
 import {labApi} from "../services/labApi.ts";
 import {parseAxiosError} from "../utils/parse.ts";
+import {useUserStore} from "../stores/user.store.ts";
 
 const amount = ref<number>(0);
 const cryptoCurrency = ref<string>(""); // TODO: Tipar con enum
 const isLoading = ref(false);
+const totalAmountsByCode = ref<Record<string, number>>({});
 
 const cleanForm = () => {
   amount.value = 0;
   cryptoCurrency.value = "";
 }
 
-const buyCrypto = async () => {
+onMounted(async () => {
+  const userId = localStorage.getItem("userId") || ""; // TODO: Obtener o fallar
+  const userStore = useUserStore();
+  await userStore.getCryptoCurrencyAmounts(userId);
+  totalAmountsByCode.value = userStore.totalCryptoCurrencyAmounts;
+});
+
+const availableAmount = computed(() => {
+  return cryptoCurrency.value ? totalAmountsByCode.value[cryptoCurrency.value] || 0 : 0;
+});
+
+const sellCrypto = async () => {
   if (!cryptoCurrency.value || !amount.value) {
     return toast.error("All fields are required");
+  }
+
+  if (amount.value > availableAmount.value) {
+    return toast.error("Does not have the amount you want to sell");
   }
 
   isLoading.value = true;
@@ -26,7 +43,7 @@ const buyCrypto = async () => {
 
     const data: TransactionData = {
       user_id: localStorage.getItem("userId") ?? "", // TODO: Obtener o fallar
-      action: "purchase", // TODO: Hacer enum
+      action: "sale", // TODO: Hacer enum
       crypto_amount: amount.value.toString(),
       crypto_code: cryptoCurrency.value,
       datetime: new Date(),
@@ -49,11 +66,11 @@ const buyCrypto = async () => {
   <div class="h-screen flex justify-center items-center w-full px-4">
     <div class="w-full max-w-md">
       <div class="text-center mb-8">
-        <h1 class="text-3xl font-bold text-yellow-500 mb-2">Buy Cryptocurrency</h1>
-        <p class="text-gray-400">Enter the details for your purchase</p>
+        <h1 class="text-3xl font-bold text-yellow-500 mb-2">Sell Cryptocurrency</h1>
+        <p class="text-gray-400">Enter the details for your sale</p>
       </div>
 
-      <form @submit.prevent="buyCrypto" class="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-8 shadow-xl border border-gray-700">
+      <form @submit.prevent="sellCrypto" class="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-8 shadow-xl border border-gray-700">
         <div class="mb-6">
           <label for="cryptocurrency" class="block mb-2 text-sm font-medium text-gray-200">
             Select Cryptocurrency
@@ -96,6 +113,9 @@ const buyCrypto = async () => {
               <span class="text-gray-400 text-sm">{{ cryptoCurrency }}</span>
             </div>
           </div>
+          <label v-if="cryptoCurrency" for="amount" class="block mt-2 text-sm font-medium text-gray-200">
+            {{ cryptoCurrency }} available: {{ availableAmount }}
+          </label>
         </div>
 
         <button
@@ -112,7 +132,7 @@ const buyCrypto = async () => {
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
           </svg>
-          {{ isLoading ? 'Processing...' : 'Buy Now' }}
+          {{ isLoading ? 'Processing...' : 'Sell Now' }}
         </button>
       </form>
 
