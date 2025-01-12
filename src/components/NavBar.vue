@@ -1,16 +1,22 @@
 <script lang="ts" setup>
 import { useRoute, useRouter } from "vue-router";
+import {useAuthStore} from "../stores/auth.store.ts";
 
 const route = useRoute();
 const router = useRouter();
+const authStore = useAuthStore();
 
 const currentRoute = route.path;
 
 const goBack = () => {
   router.back();
 };
-</script>
 
+const logout = async () => {
+  await authStore.logout();
+  await router.push("/login");
+};
+</script>
 
 <template>
   <nav class="bg-gray-900 border-gray-200">
@@ -28,6 +34,15 @@ const goBack = () => {
           <img src="https://flowbite.com/docs/images/logo.svg" class="h-8" alt="Flowbite Logo" />
           <span class="self-center text-2xl font-semibold whitespace-nowrap text-white">Pay Bear</span>
         </a>
+      </div>
+
+      <div class="flex items-center space-x-4" v-if="authStore.isUserLoggedIn">
+        <button
+            @click="logout"
+            class="text-white bg-red-600 hover:bg-red-500 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-4 py-2 focus:outline-none"
+        >
+          Logout
+        </button>
       </div>
 
       <button

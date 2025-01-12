@@ -6,11 +6,10 @@ import {parseAxiosError} from "../utils/parse.ts";
 import {toast} from "vue3-toastify";
 
 const transactions = ref<TransactionData[]>([]);
-const isLoading = ref(false);
+const isLoading = ref(true);
 
 onMounted(async () => {
   try {
-    isLoading.value = true;
     const response = await labApi.getUserHistory(localStorage.getItem("userId") ?? "");
     transactions.value = response.data;
   } catch (e) {
@@ -23,7 +22,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="h-screen w-full flex flex-col p-10">
+  <div class="w-full flex flex-col p-10">
     <div class="text-center mb-8">
       <h1 class="text-3xl font-bold text-yellow-500 mb-2">Transactions History</h1>
       <p class="text-gray-400">Watch your crypto transactions</p>
@@ -67,7 +66,7 @@ onMounted(async () => {
               </span>
             </td>
             <td class="px-6 py-4">
-              {{ transaction.money }}
+              $ {{ transaction.money }}
             </td>
             <td class="px-6 py-4">
               {{ transaction.datetime.toString().split('T')[0] }}
