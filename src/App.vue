@@ -6,6 +6,6 @@ import NavBar from "./components/NavBar.vue";
 <template>
   <div class="vue-app">
     <NavBar class="fixed top-0 w-full z-10" />
-    <RouterView class="mt-16 min-h-screen" />
+    <RouterView class="min-h-screen mt-[64px]" />
   </div>
 </template>

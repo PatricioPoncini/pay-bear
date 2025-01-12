@@ -20,5 +20,16 @@ export const useAuthStore = defineStore('authStore', {
             localStorage.setItem("userId", userId);
             console.log("User logged in");
         },
+        async logout() {
+            this.user.userId = "";
+            localStorage.removeItem("userId");
+            console.log("User logged out");
+        },
+    },
+    getters: {
+        // TODO: Si se hace F5 no se vuelve a ver
+        isUserLoggedIn(state): boolean {
+            return !!state.user.userId;
+        },
     },
 })
