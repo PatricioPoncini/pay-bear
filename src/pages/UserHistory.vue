@@ -6,11 +6,10 @@ import {parseAxiosError} from "../utils/parse.ts";
 import {toast} from "vue3-toastify";
 
 const transactions = ref<TransactionData[]>([]);
-const isLoading = ref(false);
+const isLoading = ref(true);
 
 onMounted(async () => {
   try {
-    isLoading.value = true;
     const response = await labApi.getUserHistory(localStorage.getItem("userId") ?? "");
     transactions.value = response.data;
   } catch (e) {
