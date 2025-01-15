@@ -2,8 +2,10 @@
 import { ref, onMounted } from "vue";
 import { labApi } from "../services/labApi.ts";
 import type { TransactionData } from "../types.ts";
-import { parseAxiosError } from "../utils/parse.ts";
+import {formatToARS, parseAxiosError} from "../utils/parse.ts";
 import { toast } from "vue3-toastify";
+
+// TODO: Icons en esta vista en lugar de "Edit", "View" y "Delete".
 
 const transactions = ref<TransactionData[]>([]);
 const isLoading = ref(true);
@@ -112,7 +114,7 @@ const updateTransactionAction = async (newAction: string) => {
                     {{ transaction.action }}
                   </span>
               </td>
-              <td class="px-6 py-4">$ {{ transaction.money }}</td>
+              <td class="px-6 py-4">{{ formatToARS(parseInt(transaction.money)) }}</td>
               <td class="px-6 py-4">{{ transaction.datetime.toString().split('T')[0] }}</td>
               <td class="px-6 py-4 flex gap-2">
                 <button @click="openModal('view', transaction)" class="text-blue-500 hover:underline">View</button>
@@ -143,7 +145,7 @@ const updateTransactionAction = async (newAction: string) => {
             </div>
             <div>
               <p class="text-gray-400">Price (ARS):</p>
-              <p class="font-medium">$ {{ transaction.money }}</p>
+              <p class="font-medium">{{ formatToARS(parseInt(transaction.money)) }}</p>
             </div>
             <div class="col-span-2">
               <p class="text-gray-400">Date:</p>
@@ -199,7 +201,7 @@ const updateTransactionAction = async (newAction: string) => {
 
         <div class="bg-gray-700 p-4 rounded-lg shadow-md">
           <p class="text-sm text-gray-400 uppercase tracking-wide">Price (ARS)</p>
-          <p class="text-lg font-semibold text-blue-400">$ {{ selectedTransaction?.money }}</p>
+          <p class="text-lg font-semibold text-blue-400">{{ formatToARS(parseInt(selectedTransaction?.money)) }}</p>
         </div>
 
         <div class="bg-gray-700 p-4 rounded-lg shadow-md">

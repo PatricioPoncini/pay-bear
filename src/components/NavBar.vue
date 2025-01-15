@@ -1,18 +1,11 @@
 <script lang="ts" setup>
-import { useRoute, useRouter } from "vue-router";
-import {useAuthStore} from "../stores/auth.store.ts";
+import { useRouter } from "vue-router";
+import { useAuthStore } from "../stores/auth.store.ts";
 
-const route = useRoute();
 const router = useRouter();
 const authStore = useAuthStore();
 
-const currentRoute = route.path;
-
-const goBack = () => {
-  router.back();
-};
-
-const logout = async () => {
+const handleLogout = async () => {
   await authStore.logout();
   await router.push("/login");
 };
@@ -20,55 +13,33 @@ const logout = async () => {
 
 <template>
   <nav class="bg-gray-900 border-gray-200">
-    <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
-      <div class="flex items-center space-x-4">
-        <button
-            v-if="currentRoute !== '/'"
-            @click="goBack"
-            class="text-white bg-gray-800 hover:bg-gray-700 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-4 py-2 focus:outline-none"
-        >
-          Atrás
-        </button>
+    <div class="max-w-screen pl-10 pr-10 flex items-center justify-between mx-auto p-4">
+      <a href="/" class="flex items-center space-x-3 rtl:space-x-reverse">
+        <img class="w-11 h-10" src="/pay_bear_logo.png" alt="Pay Bear Logo" />
+        <span class="self-center text-2xl font-semibold whitespace-nowrap text-white">
+          Pay Bear
+        </span>
+      </a>
 
-        <a href="/" class="flex items-center space-x-3 rtl:space-x-reverse">
-          <img src="https://flowbite.com/docs/images/logo.svg" class="h-8" alt="Flowbite Logo" />
-          <span class="self-center text-2xl font-semibold whitespace-nowrap text-white">Pay Bear</span>
+      <div>
+        <a @click="handleLogout" class="btn btn-ghost text-gray-100 cursor-pointer">
+          <svg
+              fill="none"
+              height="30"
+              viewBox="0 0 24 24"
+              width="30"
+              xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+                d="M17 16L21 12M21 12L17 8M21 12L7 12M13 16V17C13 18.6569 11.6569 20 10 20H6C4.34315 20 3 18.6569 3 17V7C3 5.34315 4.34315 4 6 4H10C11.6569 4 13 5.34315 13 7V8"
+                stroke="#ffffff"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+            />
+          </svg>
         </a>
       </div>
-
-      <div class="flex items-center space-x-4" v-if="authStore.isUserLoggedIn">
-        <button
-            @click="logout"
-            class="text-white bg-red-600 hover:bg-red-500 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-4 py-2 focus:outline-none"
-        >
-          Logout
-        </button>
-      </div>
-
-      <button
-          data-collapse-toggle="navbar-default"
-          type="button"
-          class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200"
-          aria-controls="navbar-default"
-          aria-expanded="false"
-      >
-        <span class="sr-only">Open main menu</span>
-        <svg
-            class="w-5 h-5"
-            aria-hidden="true"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 17 14"
-        >
-          <path
-              stroke="currentColor"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M1 1h15M1 7h15M1 13h15"
-          />
-        </svg>
-      </button>
     </div>
   </nav>
 </template>

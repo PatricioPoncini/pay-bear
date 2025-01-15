@@ -3,6 +3,8 @@ import { onMounted, ref } from "vue";
 import { useUserStore } from "../stores/user.store.ts";
 import { cryptoYaApi } from "../services/cryptoYaApi.ts";
 import type {CRYPTO_CURRENCY} from "../types.ts";
+import {useAuthStore} from "../stores/auth.store.ts";
+import {formatToARS} from "../utils/parse.ts";
 
 const totalAmountsByCode = ref<Record<string, number>>({
   BTC: 0,
@@ -14,13 +16,10 @@ const isLoading = ref<boolean>(true);
 const btcValueInArs = ref<number>(0);
 const usdcValueInArs = ref<number>(0);
 const ethValueInArs = ref<number>(0);
-
-const formatToARS = (amount: number): string => {
-  return amount.toFixed(2);
-};
+const authStore = useAuthStore();
 
 onMounted(async () => {
-  const userId = localStorage.getItem("userId") || ""; // TODO: Manejar error si no hay userId
+  const userId = authStore.getUserId();
   const userStore = useUserStore();
   await userStore.getCryptoCurrencyAmounts(userId);
 
@@ -90,9 +89,9 @@ const totalAmountInArs = (): string => {
               <p class="text-2xl font-bold text-yellow-400">
                 {{ totalAmountsByCode.BTC.toFixed(2) }}
               </p>
-              <p class="text-sm text-gray-400 mt-2">ARS: ${{ formatToARS(totalAmountsByCode.BTC * btcValueInArs) }}</p>
+              <p class="text-sm text-gray-400 mt-2">ARS: {{ formatToARS(totalAmountsByCode.BTC * btcValueInArs) }}</p>
               <p class="text-sm mt-2" :class="{ 'text-green-400': gainsOrLossesByCode.BTC >= 0, 'text-red-400': gainsOrLossesByCode.BTC < 0 }">
-                Ganancia/Pérdida: ${{ formatToARS(gainsOrLossesByCode.BTC) }}
+                Ganancia/Pérdida: {{ formatToARS(gainsOrLossesByCode.BTC) }}
               </p>
             </div>
           </div>
@@ -106,9 +105,9 @@ const totalAmountInArs = (): string => {
               <p class="text-2xl font-bold text-purple-400">
                 {{ totalAmountsByCode.ETH.toFixed(2) }}
               </p>
-              <p class="text-sm text-gray-400 mt-2">ARS: ${{ formatToARS(totalAmountsByCode.ETH * ethValueInArs) }}</p>
+              <p class="text-sm text-gray-400 mt-2">ARS: {{ formatToARS(totalAmountsByCode.ETH * ethValueInArs) }}</p>
               <p class="text-sm mt-2" :class="{ 'text-green-400': gainsOrLossesByCode.ETH >= 0, 'text-red-400': gainsOrLossesByCode.ETH < 0 }">
-                Ganancia/Pérdida: ${{ formatToARS(gainsOrLossesByCode.ETH) }}
+                Ganancia/Pérdida: {{ formatToARS(gainsOrLossesByCode.ETH) }}
               </p>
             </div>
           </div>
@@ -122,16 +121,16 @@ const totalAmountInArs = (): string => {
               <p class="text-2xl font-bold text-green-400">
                 {{ totalAmountsByCode.USDC.toFixed(2) }}
               </p>
-              <p class="text-sm text-gray-400 mt-2">ARS: ${{ formatToARS(totalAmountsByCode.USDC * usdcValueInArs) }}</p>
+              <p class="text-sm text-gray-400 mt-2">ARS: {{ formatToARS(totalAmountsByCode.USDC * usdcValueInArs) }}</p>
               <p class="text-sm mt-2" :class="{ 'text-green-400': gainsOrLossesByCode.USDC >= 0, 'text-red-400': gainsOrLossesByCode.USDC < 0 }">
-                Ganancia/Pérdida: ${{ formatToARS(gainsOrLossesByCode.USDC) }}
+                Ganancia/Pérdida: {{ formatToARS(gainsOrLossesByCode.USDC) }}
               </p>
             </div>
           </div>
         </div>
 
         <h1 class="text-3xl font-bold text-gray-100 mt-8 text-center">
-          Total ARS: ${{ totalAmountInArs() }}
+          Total ARS: {{ totalAmountInArs() }}
         </h1>
       </div>
     </div>

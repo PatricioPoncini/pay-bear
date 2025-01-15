@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia';
+import {toast} from "vue3-toastify";
 
 interface AuthState {
     user: {
@@ -18,18 +19,18 @@ export const useAuthStore = defineStore('authStore', {
         login(userId: string) {
             this.user.userId = userId;
             localStorage.setItem("userId", userId);
-            console.log("User logged in");
         },
         async logout() {
             this.user.userId = "";
             localStorage.removeItem("userId");
-            console.log("User logged out");
         },
-    },
-    getters: {
-        // TODO: Si se hace F5 no se vuelve a ver
-        isUserLoggedIn(state): boolean {
-            return !!state.user.userId;
-        },
-    },
+        getUserId() {
+            const userId = localStorage.getItem("userId");
+            if (!userId) {
+                toast.error("User id not found");
+                throw new Error("User id not found");
+            }
+            return userId;
+        }
+    }
 })

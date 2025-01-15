@@ -1,14 +1,17 @@
 <script setup lang="ts">
 import {ref} from "vue";
-import type {TransactionData} from "../types.ts";
+import {CRYPTO_ACTION, type TransactionData} from "../types.ts";
 import {toast} from "vue3-toastify";
 import {cryptoYaApi} from "../services/cryptoYaApi.ts";
 import {labApi} from "../services/labApi.ts";
 import {parseAxiosError} from "../utils/parse.ts";
+import {useAuthStore} from "../stores/auth.store.ts";
+import {router} from "../routes/routes.ts";
 
 const amount = ref<number>(0);
-const cryptoCurrency = ref<string>(""); // TODO: Tipar con enum
+const cryptoCurrency = ref<string>("");
 const isLoading = ref(false);
+const authStore = useAuthStore();
 
 const cleanForm = () => {
   amount.value = 0;
@@ -25,8 +28,8 @@ const buyCrypto = async () => {
     const response = await cryptoYaApi.getCurrencyPrice(cryptoCurrency.value);
 
     const data: TransactionData = {
-      user_id: localStorage.getItem("userId") ?? "", // TODO: Obtener o fallar
-      action: "purchase", // TODO: Hacer enum
+      user_id: authStore.getUserId(),
+      action: CRYPTO_ACTION.PURCHASE,
       crypto_amount: amount.value.toString(),
       crypto_code: cryptoCurrency.value,
       datetime: new Date(),
@@ -36,6 +39,9 @@ const buyCrypto = async () => {
     await labApi.saveTransaction(data);
     toast.success("Transaction saved successfully");
     cleanForm();
+    setTimeout(() => {
+      router.push("/");
+    }, 2000)
   } catch (e) {
     const {message} = parseAxiosError(e);
     toast.error(message);

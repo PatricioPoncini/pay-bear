@@ -4,6 +4,11 @@ export enum CRYPTO_CURRENCY {
     USDC = "USDC",
 };
 
+export enum CRYPTO_ACTION {
+    PURCHASE = "purchase",
+    SALE = "sale"
+};
+
 export interface TransactionData {
     _id?: string;
     user_id: string;
