@@ -201,7 +201,7 @@ const updateTransactionAction = async (newAction: string) => {
 
         <div class="bg-gray-700 p-4 rounded-lg shadow-md">
           <p class="text-sm text-gray-400 uppercase tracking-wide">Price (ARS)</p>
-          <p class="text-lg font-semibold text-blue-400">{{ formatToARS(parseInt(selectedTransaction?.money)) }}</p>
+          <p class="text-lg font-semibold text-blue-400">{{ formatToARS(parseInt(selectedTransaction?.money ?? '')) }}</p>
         </div>
 
         <div class="bg-gray-700 p-4 rounded-lg shadow-md">
