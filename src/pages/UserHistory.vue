@@ -39,7 +39,7 @@ const deleteTransaction = async () => {
   if (!selectedTransaction.value) return;
   isModalLoading.value = true;
   try {
-    await labApi.deleteTransaction(selectedTransaction.value?._id);
+    await labApi.deleteTransaction(selectedTransaction.value?._id ?? "");
     transactions.value = transactions.value.filter(t => t._id !== selectedTransaction.value?._id);
     toast.success("Transaction deleted successfully");
     closeModal();
@@ -51,7 +51,7 @@ const deleteTransaction = async () => {
   }
 };
 
-const updateTransactionAction = async (newAction: "purchase" | "sale") => {
+const updateTransactionAction = async (newAction: string) => {
   if (!selectedTransaction.value) return;
   isModalLoading.value = true;
   try {
@@ -63,7 +63,7 @@ const updateTransactionAction = async (newAction: "purchase" | "sale") => {
       money: selectedTransaction.value.money,
       datetime: selectedTransaction.value.datetime
     }
-    await labApi.updateTransaction(selectedTransaction.value?._id, updateData);
+    await labApi.updateTransaction(selectedTransaction.value?._id ?? "", updateData);
     selectedTransaction.value.action = newAction;
     toast.success("Transaction updated successfully");
     closeModal();
@@ -211,12 +211,12 @@ const updateTransactionAction = async (newAction: "purchase" | "sale") => {
       </div>
       <div v-if="modalType === 'edit'" class="flex flex-col gap-4">
         <div class="flex flex-col gap-4" v-if="!isModalLoading">
-          <select v-model="selectedTransaction.action"
+          <select v-model="selectedTransaction!.action"
                   class="border border-gray-600 rounded px-4 py-2 bg-gray-700 text-gray-100">
             <option value="purchase">Purchase</option>
             <option value="sale">Sale</option>
           </select>
-          <button @click="updateTransactionAction(selectedTransaction.action)"
+          <button @click="updateTransactionAction(selectedTransaction!.action)"
                   class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
             Save
           </button>
