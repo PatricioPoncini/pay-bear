@@ -5,6 +5,7 @@ export enum CRYPTO_CURRENCY {
 };
 
 export interface TransactionData {
+    _id?: string;
     user_id: string;
     action: string;
     crypto_code: string;

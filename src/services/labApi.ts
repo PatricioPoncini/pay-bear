@@ -15,5 +15,11 @@ export const labApi = {
     },
     async getUserHistory(userId: string) {
         return await labBack.get<TransactionData[]>(`/transactions?q={"user_id": "${userId}"}`);
+    },
+    async deleteTransaction(transactionId: string) {
+        return await labBack.delete(`/transactions/${transactionId}`);
+    },
+    async updateTransaction(transactionId: string, data: TransactionData) {
+        return await labBack.put(`/transactions/${transactionId}`, data);
     }
 }
