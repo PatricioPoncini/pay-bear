@@ -5,6 +5,9 @@ import type { TransactionData } from "../types.ts";
 import {formatToARS, parseAxiosError} from "../utils/parse.ts";
 import { toast } from "vue3-toastify";
 import {useAuthStore} from "../stores/auth.store.ts";
+import { TrashIcon } from '@heroicons/vue/24/solid'
+import { PencilIcon } from "@heroicons/vue/24/solid"
+import { EyeIcon } from "@heroicons/vue/24/solid"
 
 // TODO: Icons en esta vista en lugar de "Edit", "View" y "Delete".
 
@@ -125,9 +128,15 @@ const updateTransactionAction = async (newAction: string | null) => {
               <td class="px-6 py-4">{{ formatToARS(parseInt(transaction.money)) }}</td>
               <td class="px-6 py-4">{{ transaction.datetime.toString().split('T')[0] }}</td>
               <td class="px-6 py-4 flex gap-2">
-                <button @click="openModal('view', transaction)" class="text-blue-500 hover:underline">View</button>
-                <button @click="openModal('edit', transaction)" class="text-yellow-500 hover:underline">Edit</button>
-                <button @click="openModal('delete', transaction)" class="text-red-500 hover:underline">Delete</button>
+                <button @click="openModal('view', transaction)">
+                  <EyeIcon class="size-6 text-blue-500"/>
+                </button>
+                <button @click="openModal('edit', transaction)">
+                  <PencilIcon class="size-6 text-yellow-500" />
+                </button>
+                <button @click="openModal('delete', transaction)">
+                  <TrashIcon class="size-6 text-red-500" />
+                </button>
               </td>
             </tr>
             </tbody>
