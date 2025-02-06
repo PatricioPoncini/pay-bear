@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import {ref} from "vue";
+import {computed, ref, watch} from "vue";
 import {CRYPTO_ACTION, type TransactionData} from "../types.ts";
 import {toast} from "vue3-toastify";
 import {cryptoYaApi} from "../services/cryptoYaApi.ts";
 import {labApi} from "../services/labApi.ts";
-import {parseAxiosError} from "../utils/parse.ts";
+import {formatToARS, parseAxiosError} from "../utils/parse.ts";
 import {useAuthStore} from "../stores/auth.store.ts";
 import {router} from "../routes/routes.ts";
 
@@ -12,6 +12,7 @@ const amount = ref<number>(0);
 const cryptoCurrency = ref<string>("");
 const isLoading = ref(false);
 const authStore = useAuthStore();
+const cryptoPrice = ref<number | null>(null);
 
 const cleanForm = () => {
   amount.value = 0;
@@ -49,6 +50,23 @@ const buyCrypto = async () => {
     isLoading.value = false;
   }
 }
+
+watch(cryptoCurrency, async (newCrypto: string) => {
+  if (newCrypto) {
+    try {
+      const response = await cryptoYaApi.getCurrencyPrice(newCrypto);
+      cryptoPrice.value = response.data.totalAsk;
+    } catch (error) {
+      toast.error("Error fetching crypto price");
+      console.error(error);
+      cryptoPrice.value = null;
+    }
+  }
+});
+
+const totalAmountInARS = computed(() => {
+  return cryptoPrice.value && amount.value ? (cryptoPrice.value * amount.value) : 0;
+});
 </script>
 
 <template>
@@ -98,9 +116,9 @@ const buyCrypto = async () => {
                 class="w-full bg-gray-700 border border-gray-600 text-gray-100 text-sm rounded-xl p-4 focus:ring-2 focus:ring-yellow-500/50 focus:border-yellow-500 transition-colors"
                 :class="{'border-red-500': amount <= 0 && cryptoCurrency}"
             >
-            <div class="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none">
-              <span class="text-gray-400 text-sm">{{ cryptoCurrency }}</span>
-            </div>
+            <label v-if="cryptoCurrency && amount" for="amount" class="block mt-2 text-sm font-medium text-gray-200">
+              {{ cryptoCurrency }} to ARS: {{ formatToARS(totalAmountInARS) }}
+            </label>
           </div>
         </div>
 
