@@ -31,10 +31,10 @@ onMounted(async () => {
     USDC: userStore.totalCryptoCurrencyAmounts.USDC || 0,
   };
 
-  const totals: Record<CRYPTO_CURRENCY, { purchases: number; sales: number }> = {
-    BTC: { purchases: 0, sales: 0 },
-    ETH: { purchases: 0, sales: 0 },
-    USDC: { purchases: 0, sales: 0 },
+  const totals: Record<CRYPTO_CURRENCY, { purchases: number; cryptoAmount: number; sales: number }> = {
+    BTC: { purchases: 0, cryptoAmount: 0, sales: 0 },
+    ETH: { purchases: 0, cryptoAmount: 0, sales: 0 },
+    USDC: { purchases: 0, cryptoAmount: 0, sales: 0 },
   };
 
   transactions.forEach((tx) => {
@@ -56,6 +56,14 @@ onMounted(async () => {
   btcValueInArs.value = (await cryptoYaApi.getCurrencyPrice("BTC")).data.bid;
   usdcValueInArs.value = (await cryptoYaApi.getCurrencyPrice("USDC")).data.bid;
   ethValueInArs.value = (await cryptoYaApi.getCurrencyPrice("ETH")).data.bid;
+
+  (Object.keys(totals) as Array<CRYPTO_CURRENCY>).forEach((crypto) => {
+    const { purchases, sales, cryptoAmount } = totals[crypto];
+
+    const currentValue = cryptoAmount * (crypto === "BTC" ? btcValueInArs.value : crypto === "ETH" ? ethValueInArs.value : usdcValueInArs.value);
+
+    gainsOrLossesByCode.value[crypto] = sales + currentValue - purchases;
+  });
 
   isLoading.value = false;
 });

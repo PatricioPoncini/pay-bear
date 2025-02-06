@@ -4,8 +4,10 @@ import { labApi } from "../services/labApi.ts";
 import type { TransactionData } from "../types.ts";
 import {formatToARS, parseAxiosError} from "../utils/parse.ts";
 import { toast } from "vue3-toastify";
-
-// TODO: Icons en esta vista en lugar de "Edit", "View" y "Delete".
+import {useAuthStore} from "../stores/auth.store.ts";
+import { TrashIcon } from '@heroicons/vue/24/solid'
+import { PencilIcon } from "@heroicons/vue/24/solid"
+import { EyeIcon } from "@heroicons/vue/24/solid"
 
 const transactions = ref<TransactionData[]>([]);
 const isLoading = ref(true);
@@ -13,10 +15,12 @@ const isModalOpen = ref(false);
 const modalType = ref<"view" | "edit" | "delete">("view");
 const selectedTransaction = ref<TransactionData | null>(null);
 const isModalLoading = ref(false);
+const authStore = useAuthStore();
+const editedAction = ref<string | null>(null);
 
 onMounted(async () => {
   try {
-    const response = await labApi.getUserHistory(localStorage.getItem("userId") ?? "");
+    const response = await labApi.getUserHistory(authStore.getUserId());
     transactions.value = response.data;
   } catch (e) {
     const { message } = parseAxiosError(e);
@@ -29,6 +33,9 @@ onMounted(async () => {
 const openModal = (type: "view" | "edit" | "delete", transaction: TransactionData) => {
   modalType.value = type;
   selectedTransaction.value = transaction;
+  if (type === "edit") {
+    editedAction.value = transaction.action;
+  }
   isModalOpen.value = true;
 };
 
@@ -41,7 +48,8 @@ const deleteTransaction = async () => {
   if (!selectedTransaction.value) return;
   isModalLoading.value = true;
   try {
-    await labApi.deleteTransaction(selectedTransaction.value?._id ?? "");
+    if (!selectedTransaction.value._id) return;
+    await labApi.deleteTransaction(selectedTransaction.value._id);
     transactions.value = transactions.value.filter(t => t._id !== selectedTransaction.value?._id);
     toast.success("Transaction deleted successfully");
     closeModal();
@@ -53,8 +61,8 @@ const deleteTransaction = async () => {
   }
 };
 
-const updateTransactionAction = async (newAction: string) => {
-  if (!selectedTransaction.value) return;
+const updateTransactionAction = async (newAction: string | null) => {
+  if (!newAction || !selectedTransaction.value || !editedAction.value || selectedTransaction.value.action === editedAction.value) return;
   isModalLoading.value = true;
   try {
     const updateData: TransactionData = {
@@ -65,8 +73,9 @@ const updateTransactionAction = async (newAction: string) => {
       money: selectedTransaction.value.money,
       datetime: selectedTransaction.value.datetime
     }
-    await labApi.updateTransaction(selectedTransaction.value?._id ?? "", updateData);
-    selectedTransaction.value.action = newAction;
+    if (!selectedTransaction.value._id) return;
+    await labApi.updateTransaction(selectedTransaction.value._id, updateData);
+    selectedTransaction.value.action = editedAction.value;
     toast.success("Transaction updated successfully");
     closeModal();
   } catch (e) {
@@ -105,21 +114,29 @@ const updateTransactionAction = async (newAction: string) => {
             </thead>
             <tbody>
             <tr v-for="transaction in transactions" :key="transaction._id"
-                class="bg-gray-700 border-b text-white hover:bg-gray-600 transition-colors">
+                class="bg-gray-700 border-b text-white hover:bg-gray-600 transition-colors group">
+
               <td class="px-6 py-4 font-medium">{{ transaction.crypto_code }}</td>
               <td class="px-6 py-4">{{ transaction.crypto_amount }}</td>
               <td class="px-6 py-4">
-                  <span :class="transaction.action === 'purchase' ? 'bg-green-900 text-green-300' : 'bg-red-900 text-red-300'"
-                        class="text-xs font-medium me-2 px-2.5 py-0.5 rounded">
-                    {{ transaction.action }}
-                  </span>
+              <span :class="transaction.action === 'purchase' ? 'bg-green-900 text-green-300' : 'bg-red-900 text-red-300'"
+                    class="text-xs font-medium px-2.5 py-0.5 rounded">
+                {{ transaction.action }}
+              </span>
               </td>
               <td class="px-6 py-4">{{ formatToARS(parseInt(transaction.money)) }}</td>
               <td class="px-6 py-4">{{ transaction.datetime.toString().split('T')[0] }}</td>
-              <td class="px-6 py-4 flex gap-2">
-                <button @click="openModal('view', transaction)" class="text-blue-500 hover:underline">View</button>
-                <button @click="openModal('edit', transaction)" class="text-yellow-500 hover:underline">Edit</button>
-                <button @click="openModal('delete', transaction)" class="text-red-500 hover:underline">Delete</button>
+
+              <td class="px-6 py-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                <button @click="openModal('view', transaction)">
+                  <EyeIcon class="size-6 text-blue-500"/>
+                </button>
+                <button @click="openModal('edit', transaction)">
+                  <PencilIcon class="size-6 text-yellow-500"/>
+                </button>
+                <button @click="openModal('delete', transaction)">
+                  <TrashIcon class="size-6 text-red-500"/>
+                </button>
               </td>
             </tr>
             </tbody>
@@ -154,12 +171,15 @@ const updateTransactionAction = async (newAction: string) => {
           </div>
 
           <div class="flex justify-end gap-3 pt-2 border-t border-gray-600">
-            <button @click="openModal('view', transaction)"
-                    class="text-blue-500 text-sm font-medium">View</button>
-            <button @click="openModal('edit', transaction)"
-                    class="text-yellow-500 text-sm font-medium">Edit</button>
-            <button @click="openModal('delete', transaction)"
-                    class="text-red-500 text-sm font-medium">Delete</button>
+            <button @click="openModal('view', transaction)">
+              <EyeIcon class="size-6 text-blue-500"/>
+            </button>
+            <button @click="openModal('edit', transaction)">
+              <PencilIcon class="size-6 text-yellow-500"/>
+            </button>
+            <button @click="openModal('delete', transaction)">
+              <TrashIcon class="size-6 text-red-500"/>
+            </button>
           </div>
         </div>
 
@@ -213,12 +233,12 @@ const updateTransactionAction = async (newAction: string) => {
       </div>
       <div v-if="modalType === 'edit'" class="flex flex-col gap-4">
         <div class="flex flex-col gap-4" v-if="!isModalLoading">
-          <select v-model="selectedTransaction!.action"
+          <select v-model="editedAction"
                   class="border border-gray-600 rounded px-4 py-2 bg-gray-700 text-gray-100">
             <option value="purchase">Purchase</option>
             <option value="sale">Sale</option>
           </select>
-          <button @click="updateTransactionAction(selectedTransaction!.action)"
+          <button @click="updateTransactionAction(editedAction)"
                   class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
             Save
           </button>
