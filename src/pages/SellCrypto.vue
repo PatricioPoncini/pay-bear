@@ -50,7 +50,7 @@ const sellCrypto = async () => {
       crypto_amount: amount.value.toString(),
       crypto_code: cryptoCurrency.value,
       datetime: new Date(),
-      money: response.data.totalAsk.toString(),
+      money: (response.data.totalAsk * amount.value).toFixed(2),
     };
 
     await labApi.saveTransaction(data);
