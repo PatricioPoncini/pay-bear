@@ -124,7 +124,7 @@ const updateTransactionAction = async (newAction: string | null) => {
                 {{ transaction.action }}
               </span>
               </td>
-              <td class="px-6 py-4 truncate max-w-[150px] overflow-hidden whitespace-nowrap">
+              <td class="px-6 py-4 truncate max-w-[150px] overflow-hidden whitespace-nowrap"     :title="formatToARS(parseInt(transaction.money))">
                 {{ formatToARS(parseInt(transaction.money)) }}
               </td>
               <td class="px-6 py-4">{{ transaction.datetime.toString().split('T')[0] }}</td>
@@ -164,7 +164,7 @@ const updateTransactionAction = async (newAction: string | null) => {
             </div>
             <div>
               <p class="text-gray-400">Price (ARS):</p>
-              <p class="font-medium truncate max-w-[150px] overflow-hidden whitespace-nowrap">
+              <p class="font-medium truncate max-w-[150px] overflow-hidden whitespace-nowrap"     :title="formatToARS(parseInt(transaction.money))">
                 {{ formatToARS(parseInt(transaction.money)) }}
               </p>
             </div>

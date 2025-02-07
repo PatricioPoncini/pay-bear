@@ -20,6 +20,13 @@ const cleanForm = () => {
   cryptoCurrency.value = "";
 }
 
+const formattedAmount = computed({
+  get: () => amount.value.toString().replace('.', ','),
+  set: (val: string) => {
+    amount.value = parseFloat(val.replace(',', '.')) || 0;
+  }
+});
+
 onMounted(async () => {
   const userId = authStore.getUserId();
   const userStore = useUserStore();
@@ -107,9 +114,11 @@ const sellCrypto = async () => {
           </label>
           <div class="relative">
             <input
-                v-model="amount"
-                type="number"
+                v-model="formattedAmount"
+                type="text"
                 id="amount"
+                inputmode="decimal"
+                pattern="[0-9]*[.,]?[0-9]*"
                 step="0.0000001"
                 placeholder="0.000"
                 class="w-full bg-gray-700 border border-gray-600 text-gray-100 text-sm rounded-xl p-4 focus:ring-2 focus:ring-yellow-500/50 focus:border-yellow-500 transition-colors"
