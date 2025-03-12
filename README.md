@@ -1,5 +1,8 @@
 # `Pay Bear`
 
+## `Spoiler Alert`
+### This project got me a **perfect 10/10!** 🎉🔥 
+
 ## `About the project`
 Pay Bear is a cryptocurrency transaction tracker designed to help users monitor their crypto purchases and sales in a sleek, intuitive interface. Built with modern web technologies, this project focuses on speed, simplicity, and a seamless user experience.
 
@@ -36,4 +39,4 @@ bun run dev
 
 
 ## `Live demo`
-Experience Pay Bear live at: [pay-bear.netlify.app](https://pay-bear.netlify.app/)
+Experience Pay Bear live at: [pay-bear.netlify.app](https://pay-bear.netlify.app/) 
